@@ -1,0 +1,10 @@
+[submodule "MLX42"]
+	path = MLX42
+	url = git@github.com:42-Madrid-Fundacion-Telefonica/MLX42.git
+[submodule "ft_printf"]
+	path = ft_printf
+	url = git@github.com:encarbassotnopot/42_ft_printf
+	branch = main
+[submodule "libft"]
+	path = libft
+	url = git@github.com:encarbassotnopot/42_libft
