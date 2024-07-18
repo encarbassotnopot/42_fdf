@@ -9,14 +9,14 @@ BUILD_DIR = build
 LIB_DIR = lib
 
 NAME = fdf
-CFLAGS = -Wextra -Wall -Werror -Wunreachable-code -Ofast
+CFLAGS = -Wextra -Wall -Wunreachable-code -Ofast -Fsanitize=address
 
 CC = cc
 LIBMLX = MLX42
 LIBFT = libft
 FT_PRINTF = ft_printf
 
-all: libft libmlx ft_printf $(NAME)
+all: $(NAME)
 
 libft: | $(LIB_DIR) $(INC_DIR)
 	make -C $(LIBFT)
@@ -36,7 +36,7 @@ $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 $(BUILD_DIR) $(LIB_DIR) $(INC_DIR):
 	mkdir -p $@
 
-$(NAME): $(OBJ_FILES)
+$(NAME): $(OBJ_FILES) libft libmlx ft_printf
 	$(CC) $(OBJ_FILES) $(LIB_FLAGS) $(HDR_FLAGS) -o $(NAME)
 
 clean reclean:
