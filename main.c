@@ -1,13 +1,18 @@
-// Written by Bruh
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
+/*   Updated: 2024/07/31 16:12:37 by ecoma-ba         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include "MLX42/MLX42.h"
-#include "ft_printf.h"
-#include "libft.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#define WIDTH 256
-#define HEIGHT 256
+#include "fdf.h"
+#define WIDTH 1024
+#define HEIGHT 1024
 
 // Exit the program as failure.
 static void	ft_error(void)
@@ -17,89 +22,186 @@ static void	ft_error(void)
 }
 
 // Print the window width and height.
-static void	ft_hook(void *param)
+static void	ft_hook(void **arr)
 {
-	int			aug;
-	static int	color = 0;
+	int			*last_col;
+	int			*color;
 	mlx_image_t	*img;
 
-	int32_t x, y;
-	aug = 3;
-	/*mlx_get_window_pos(mlx, &x, &y);*/
-	/*if (mlx_is_key_down(param, MLX_KEY_LEFT_SHIFT))*/
-	/*	aug *= 5;*/
-	/*if (mlx_is_key_down(param, MLX_KEY_UP))*/
-	/*	y -= aug;*/
-	/*if (mlx_is_key_down(param, MLX_KEY_DOWN))*/
-	/*	y += aug;*/
-	/*if (mlx_is_key_down(param, MLX_KEY_LEFT))*/
-	/*	x -= aug;*/
-	/*if (mlx_is_key_down(param, MLX_KEY_RIGHT))*/
-	/*	x += aug;*/
-	/*mlx_set_window_pos(mlx, x, y);*/
-	//
-	img = (mlx_image_t *)param;
-	color += 3;
-	color %= 0x1000000;
-	ft_memset(img->pixels, (color << 8), img->width * img->height
-		* sizeof(int32_t));
-	ft_printf("color: %#x\n", img->pixels[0]);
+	img = arr[1];
+	color = arr[2];
+	last_col = arr[3];
 }
 
-static void	ft_key_hook(mlx_key_data_t keydata, void *param)
+static void	ft_resize_hook(int32_t width, int32_t height, void **arr)
 {
-	ft_printf("key %d, action %d, os %d, modifier %d\n", keydata.key,
-		keydata.action, keydata.os_key, keydata.modifier);
-}
-
-static void	ft_cursor_hook(double xpos, double ypos, void *param)
-{
-	ft_printf("x %d, y %d\n", xpos, ypos);
-}
-
-static void	ft_scroll_hook(double xdelta, double ydelta, void *param)
-{
-	mlx_image_t	*img;
 	mlx_t		*mlx;
+	mlx_image_t	*img;
 
-	printf("x %f, y %f\n", xdelta, ydelta);
+	mlx = arr[0];
+	img = arr[1];
+	mlx_resize_image(img, width, height);
 }
 
-static void	ft_mouse_hook(mouse_key_t button, action_t action,
-		modifier_key_t mods, void *param)
+static void	ft_img_set_pixel(mlx_image_t *img, t_point *p, uint32_t color)
 {
-	ft_printf("key %d, action %d, modifier %d\n", button, action, mods);
+	if (p->x > img->width || p->y > img->height)
+		return ;
+	ft_memset32(img->pixels + p->x + p->y * img->height, color, 1);
 }
 
-/*static void key_hook();*/
+static void	ft_key_hook_color(mlx_key_data_t kd, void **arr)
+{
+	mlx_t		*mlx;
+	mlx_image_t	*img;
+	int			*last_col;
+	int			*color;
+	int			aug;
+
+	aug = 1;
+	mlx = arr[0];
+	img = arr[1];
+	color = arr[2];
+	last_col = arr[3];
+	if (kd.key == MLX_KEY_ESCAPE)
+		mlx_close_window(mlx);
+	if (kd.modifier & MLX_CONTROL)
+	{
+		if (kd.modifier & MLX_SHIFT)
+			aug *= 4;
+		if (kd.key == MLX_KEY_Q)
+			set_r(color, get_r(*color) - aug);
+		if (kd.key == MLX_KEY_W)
+			set_r(color, get_r(*color) + aug);
+		if (kd.key == MLX_KEY_A)
+			set_g(color, get_g(*color) + aug);
+		if (kd.key == MLX_KEY_S)
+			set_g(color, get_g(*color) + aug);
+		if (kd.key == MLX_KEY_Z)
+			set_b(color, get_b(*color) + aug);
+		if (kd.key == MLX_KEY_X)
+			set_b(color, get_b(*color) + aug);
+		if (kd.key == MLX_KEY_UP)
+			set_a(color, get_a(*color) + aug);
+		if (kd.key == MLX_KEY_DOWN)
+			set_a(color, get_a(*color) + aug);
+	}
+	if (*last_col != *color)
+	{
+		ft_memset32(img->pixels, *color, img->width * img->height);
+		ft_printf("r: %d, g:%d b:%d a: %d, color: %#x\n", get_r(*color),
+			get_g(*color), get_b(*color), get_a(*color), *color);
+		*last_col = *color;
+	}
+	ft_printf("key %d, action %d, os %d, modifier %d\n", kd.key, kd.action,
+		kd.os_key, kd.modifier);
+}
+
+static void	ft_key_hook_line(mlx_key_data_t kd, void **arr)
+{
+	mlx_t		*mlx;
+	mlx_image_t	*img;
+	int			*last_col;
+	int			*color;
+	int			aug;
+
+	aug = 1;
+	mlx = arr[0];
+	img = arr[1];
+	color = arr[2];
+	last_col = arr[3];
+	if (kd.key == MLX_KEY_ESCAPE)
+		mlx_close_window(mlx);
+	if (kd.modifier & MLX_CONTROL)
+	{
+		if (kd.modifier & MLX_SHIFT)
+			aug *= 4;
+		if (kd.key == MLX_KEY_Q)
+			set_r(color, get_r(*color) - aug);
+		if (kd.key == MLX_KEY_W)
+			set_r(color, get_r(*color) + aug);
+		if (kd.key == MLX_KEY_A)
+			set_g(color, get_g(*color) + aug);
+		if (kd.key == MLX_KEY_S)
+			set_g(color, get_g(*color) + aug);
+		if (kd.key == MLX_KEY_Z)
+			set_b(color, get_b(*color) + aug);
+		if (kd.key == MLX_KEY_X)
+			set_b(color, get_b(*color) + aug);
+		if (kd.key == MLX_KEY_UP)
+			set_a(color, get_a(*color) + aug);
+		if (kd.key == MLX_KEY_DOWN)
+			set_a(color, get_a(*color) + aug);
+	}
+	if (*last_col != *color)
+	{
+		ft_memset32(img->pixels, *color, img->width * img->height);
+		ft_printf("r: %d, g:%d b:%d a: %d, color: %#x\n", get_r(*color),
+			get_g(*color), get_b(*color), get_a(*color), *color);
+		*last_col = *color;
+	}
+	ft_printf("key %d, action %d, os %d, modifier %d\n", kd.key, kd.action,
+		kd.os_key, kd.modifier);
+}
+static void	ft_mouse_hook(mouse_key_t button, action_t action,
+		modifier_key_t mods, void **arr)
+{
+	mlx_t		*mlx;
+	mlx_image_t	*img;
+	int			*last_col;
+	int			*color;
+	int			aug;
+	t_point		**points;
+
+	mlx = arr[0];
+	int x, y;
+	img = arr[1];
+	color = arr[2];
+	points = (t_point **)arr[4];
+	ft_printf("key %d, action %d, modifier %d\n", button, action, mods);
+	if (button == MLX_MOUSE_BUTTON_LEFT)
+	{
+		mlx_get_mouse_pos(mlx, &points[0]->x, &points[0]->y);
+		ft_printf("x: %d, y: %d\n", points[0]->x, points[0]->y);
+	}
+	if (button == MLX_MOUSE_BUTTON_RIGHT)
+	{
+		mlx_get_mouse_pos(mlx, &points[0]->x, &points[0]->y);
+		ft_printf("x: %d, y: %d\n", points[0]->x, points[0]->y);
+	}
+}
 
 int32_t	main(void)
 {
 	mlx_t		*mlx;
 	mlx_image_t	*img;
-	void		*arr[2];
+	int			color;
+	int			last_color;
+	void		*arr[5];
+	t_point		**points;
 
-	// MLX allows you to define its core behaviour before startup.
-	/*mlx_set_setting(MLX_MAXIMIZED, true);*/
-	mlx = mlx_init(WIDTH * 4, HEIGHT * 4, "test", true);
+	points = ft_calloc(2, sizeof(t_point *));
+	points[0] = ft_calloc(1, sizeof(t_point));
+	points[1] = ft_calloc(1, sizeof(t_point));
+	color = 0xF05B3CFF;
+	last_color = color;
+	mlx = mlx_init(WIDTH, HEIGHT, "test", true);
 	if (!mlx)
 		ft_error();
-	/* Do stuff */
-	// Create and display the image.
-	img = mlx_new_image(mlx, 256, 256);
+	img = mlx_new_image(mlx, WIDTH, HEIGHT);
+	ft_memset32(img->pixels, color, img->width * img->height);
 	if (!img || (mlx_image_to_window(mlx, img, 0, 0) < 0))
 		ft_error();
-	// Even after the image is being displayed, we can still modify the buffer.
-	// Register a hook and pass mlx as an optional param.
-	// NOTE: Do this before calling mlx_loop!
 	arr[0] = mlx;
 	arr[1] = img;
-	mlx_loop_hook(mlx, ft_hook, img);
-	mlx_key_hook(mlx, ft_key_hook, mlx);
-	mlx_mouse_hook(mlx, ft_mouse_hook, mlx);
-	mlx_scroll_hook(mlx, ft_scroll_hook, mlx);
-	mlx_cursor_hook(mlx, ft_cursor_hook, mlx);
+	arr[2] = &color;
+	arr[3] = &last_color;
+	arr[4] = points;
+	mlx_loop_hook(mlx, ft_hook, arr);
+	mlx_resize_hook(mlx, ft_resize_hook, arr);
+	mlx_key_hook(mlx, ft_key_hook_color, arr);
+	mlx_mouse_hook(mlx, ft_mouse_hook, arr);
 	mlx_loop(mlx);
 	mlx_terminate(mlx);
-	return (EXIT_SUCCESS);
+	return (MLX_SUCCESS);
 }

@@ -2,16 +2,16 @@ SRC_FILES = $(wildcard *.c)
 OBJ_FILES = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRC_FILES))
 HDR_FILES = 
 
-HDR_FLAGS = -I $(LIBMLX)/include -I $(LIBFT) -I $(FT_PRINTF) 
-LIB_FLAGS = -ldl -lglfw -pthread -lm -L $(LIB_DIR) -lft -lftprintf -lmlx42
+HDR_FLAGS = -I $(LIBMLX)/include -I $(LIBFT) -I $(FT_PRINTF) -I .
+LIB_FLAGS = -ldl -lglfw -pthread -lm -L $(PWD)/$(LIB_DIR) -lft -lftprintf -lmlx42 -rpath $(PWD)/$(LIB_DIR)
 
 BUILD_DIR = build
 LIB_DIR = lib
 
 NAME = fdf
-CFLAGS = -Wextra -Wall -Wunreachable-code -Ofast -Fsanitize=address
+CFLAGS = -Wextra -Wall -Ofast -g -Fsanitize=address
 
-CC = cc
+CC = clang
 LIBMLX = MLX42
 LIBFT = libft
 FT_PRINTF = ft_printf
