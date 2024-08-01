@@ -36,7 +36,7 @@ $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 $(BUILD_DIR) $(LIB_DIR) $(INC_DIR):
 	mkdir -p $@
 
-$(NAME): $(OBJ_FILES) libft libmlx ft_printf
+$(NAME): libft libmlx ft_printf $(OBJ_FILES)
 	$(CC) $(OBJ_FILES) $(LIB_FLAGS) $(HDR_FLAGS) -o $(NAME)
 
 clean reclean:
