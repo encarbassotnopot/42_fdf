@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 09:03:44 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/02 16:30:16 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/02 16:46:40 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 
 void	calculate_2d(t_coord *c, t_limits *l)
 {
-	c->proj_x = (c->x - c->z) * cos(M_PI / 6);
-	c->proj_y = c->y + (c->x + c->z) * sin(M_PI / 6);
+	int s[3] = {3, 3, 3};
+	c->proj_x = (c->x * s[0] - c->z * s[2]) * cos(M_PI / 6);
+	c->proj_y = c->y * s[1] + (c->x * s[0] + c->z * s[2]) * sin(M_PI / 6);
 	if (c->proj_x < l->min_x)
 		l->min_x = c->proj_x;
 	if (c->proj_x > l->max_x)

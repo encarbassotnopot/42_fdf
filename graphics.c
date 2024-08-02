@@ -6,14 +6,14 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/02 16:32:57 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/02 16:48:20 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #define WIDTH 1024
 #define HEIGHT 1024
-#define IMG_SCALE 12
+#define IMG_SCALE 4
 
 // Exit the program as failure.
 static void	ft_error(void)
@@ -39,11 +39,10 @@ static void	ft_img_set_pixel(mlx_image_t *img, t_point *p, uint32_t color)
 
 	if (p->x <= 0 || p->y <= 0)
 		return ;
-	x = p->x*IMG_SCALE;
-	y = p->y*IMG_SCALE;
+	x = p->x * IMG_SCALE;
+	y = p->y * IMG_SCALE;
 	ft_memset32(&img->pixels[x + y * img->width], color, 1);
 }
-
 
 static void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to, t_limits *l)
 {
@@ -153,8 +152,8 @@ int32_t	mlx_main(t_coord *map, t_limits *l)
 			"test", true);
 	if (!mlx)
 		ft_error();
-	img = mlx_new_image(mlx, (l->max_x - l->min_x + 20) * IMG_SCALE, (l->max_y
-				- l->min_y + 20) * IMG_SCALE);
+	img = mlx_new_image(mlx, (l->max_x - l->min_x) * IMG_SCALE + 20, (l->max_y
+				- l->min_y) * IMG_SCALE + 20);
 	ft_memset32(img->pixels, color, img->width * img->height);
 	if (!img || (mlx_image_to_window(mlx, img, 0, 0) < 0))
 		ft_error();
