@@ -6,13 +6,14 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/02 09:08:51 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/02 16:32:57 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #define WIDTH 1024
 #define HEIGHT 1024
+#define IMG_SCALE 12
 
 // Exit the program as failure.
 static void	ft_error(void)
@@ -38,33 +39,13 @@ static void	ft_img_set_pixel(mlx_image_t *img, t_point *p, uint32_t color)
 
 	if (p->x <= 0 || p->y <= 0)
 		return ;
-	x = p->x * 4;
-	y = p->y * 4;
+	x = p->x*IMG_SCALE;
+	y = p->y*IMG_SCALE;
 	ft_memset32(&img->pixels[x + y * img->width], color, 1);
 }
 
-static void	ft_key_hook(mlx_key_data_t kd, void **arr)
-{
-	mlx_t		*mlx;
-	mlx_image_t	*img;
-	int			*last_col;
-	int			*color;
-	int			aug;
 
-	aug = 1;
-	mlx = arr[0];
-	img = arr[1];
-	color = arr[2];
-	last_col = arr[3];
-	if (kd.key == MLX_KEY_ESCAPE)
-		mlx_close_window(mlx);
-	if (kd.key == MLX_KEY_R)
-		ft_memset32(img->pixels, *color, img->width * img->height);
-	ft_printf("key %d, action %d, os %d, modifier %d\n", kd.key, kd.action,
-		kd.os_key, kd.modifier);
-}
-
-static void	draw_line(mlx_image_t *img, t_point **p, uint32_t color)
+static void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to, t_limits *l)
 {
 	t_point_d	*p_diff;
 	t_point_d	*p_draw;
@@ -74,19 +55,22 @@ static void	draw_line(mlx_image_t *img, t_point **p, uint32_t color)
 
 	i = -1;
 	p_diff = ft_calloc(1, sizeof(t_point_d));
-	p_diff->x = p[1]->x - p[0]->x;
-	p_diff->y = p[1]->y - p[0]->y;
+	p_diff->x = from->proj_x - to->proj_x - l->min_x + 10;
+	p_diff->y = from->proj_y - to->proj_y - l->min_y + 10;
 	p_draw = ft_calloc(1, sizeof(t_point_d));
-	p_draw->x = p[0]->x;
-	p_draw->y = p[0]->y;
+	p_draw->x = to->x - l->min_x + 10;
+	p_draw->y = to->y - l->min_y + 10;
 	p_round = ft_calloc(1, sizeof(t_point));
-	if (p_diff->x == 0 && p_diff->y == 0)
+	if (p_diff->x == 0 && p_draw->y == 0)
 	{
+		ft_img_set_pixel(img, p_round, 0xFF);
 		free(p_diff);
 		free(p_draw);
 		return ;
 	}
-	if (abs(p_diff->x) > abs(p_diff->y))
+	printf("from: %f,%f to %f,%f\n", from->proj_x, from->proj_y, to->proj_x,
+		to->proj_y);
+	if (fabs(p_diff->x) > fabs(p_diff->y))
 		step = p_diff->x;
 	else
 		step = p_diff->y;
@@ -96,73 +80,92 @@ static void	draw_line(mlx_image_t *img, t_point **p, uint32_t color)
 	{
 		p_round->x = round(p_draw->x);
 		p_round->y = round(p_draw->y);
-		ft_img_set_pixel(img, p_round, color);
+		ft_img_set_pixel(img, p_round, 0xFF);
 		p_draw->x += p_diff->x;
 		p_draw->y += p_diff->y;
-		ft_printf("x1: %d, y1: %d\n", p_draw->x, p_draw->y);
 	}
 	free(p_diff);
 	free(p_draw);
 	free(p_round);
 }
 
-static void	ft_mouse_hook(mouse_key_t button, action_t action,
-		modifier_key_t mods, void **arr)
+void	map_next(mlx_image_t *img, t_coord *map, t_limits *l, int reset)
+{
+	static t_coord	*iter = NULL;
+	static t_coord	*line_h = NULL;
+
+	if (!iter || reset)
+	{
+		line_h = map;
+		iter = line_h;
+	}
+	if (line_h)
+	{
+		if (iter)
+		{
+			if (iter->next_x)
+				draw_line(img, iter, iter->next_x, l);
+			if (iter->next_z)
+				draw_line(img, iter, iter->next_z, l);
+			iter = iter->next_x;
+		}
+		line_h = line_h->next_z;
+		if (!iter)
+			iter = line_h;
+	}
+}
+
+void	ft_draw_next_line(void **arr)
+{
+	map_next(arr[1], arr[2], arr[3], 0);
+}
+
+static void	ft_key_hook(mlx_key_data_t kd, void **arr)
 {
 	mlx_t		*mlx;
 	mlx_image_t	*img;
 	int			*last_col;
-	int			*color;
 	int			aug;
-	t_point		**points;
 
+	aug = 1;
 	mlx = arr[0];
-	int x, y;
-	img = arr[1];
-	color = arr[2];
-	points = (t_point **)arr[4];
-	ft_printf("key %d, action %d, modifier %d\n", button, action, mods);
-	if (button == MLX_MOUSE_BUTTON_LEFT)
+	/*img = arr[1];*/
+	if (kd.key == MLX_KEY_ESCAPE)
+		mlx_close_window(mlx);
+	if (kd.key == MLX_KEY_R)
 	{
-		mlx_get_mouse_pos(mlx, &points[0]->x, &points[0]->y);
-		ft_printf("x: %d, y: %d\n", points[1]->x, points[1]->y);
-		draw_line(img, points, 0xFF);
+		ft_memset32(img->pixels, 0xFFFFFFFF, img->width * img->height);
+		map_next(arr[1], arr[2], arr[3], 1);
 	}
-	if (button == MLX_MOUSE_BUTTON_RIGHT)
-	{
-		mlx_get_mouse_pos(mlx, &points[1]->x, &points[1]->y);
-		ft_printf("x: %d, y: %d\n", points[0]->x, points[0]->y);
-		draw_line(img, points, 0xFF);
-	}
+	ft_printf("key %d, action %d, os %d, modifier %d\n", kd.key, kd.action,
+		kd.os_key, kd.modifier);
 }
-/*
-int32_t	main(void)
+int32_t	mlx_main(t_coord *map, t_limits *l)
 {
 	mlx_t		*mlx;
 	mlx_image_t	*img;
+	void		*arr[4];
 	int			color;
-	void		*arr[5];
-	t_point		**points;
 
-	points = ft_calloc(2, sizeof(t_point *));
-	points[0] = ft_calloc(1, sizeof(t_point));
-	points[1] = ft_calloc(1, sizeof(t_point));
 	color = 0xF05B3CFF;
-	mlx = mlx_init(WIDTH, HEIGHT, "test", true);
+	color = 0xFFFFFFFF;
+	mlx = mlx_init((l->max_x - l->min_x + 20), (l->max_y - l->min_y + 20),
+			"test", true);
 	if (!mlx)
 		ft_error();
-	img = mlx_new_image(mlx, WIDTH * 4, HEIGHT * 4);
+	img = mlx_new_image(mlx, (l->max_x - l->min_x + 20) * IMG_SCALE, (l->max_y
+				- l->min_y + 20) * IMG_SCALE);
 	ft_memset32(img->pixels, color, img->width * img->height);
 	if (!img || (mlx_image_to_window(mlx, img, 0, 0) < 0))
 		ft_error();
 	arr[0] = mlx;
 	arr[1] = img;
-	arr[2] = &color;
-	arr[4] = points;
+	arr[2] = map;
+	arr[3] = l;
 	mlx_resize_hook(mlx, ft_resize_hook, arr);
-	mlx_mouse_hook(mlx, ft_mouse_hook, arr);
 	mlx_key_hook(mlx, ft_key_hook, arr);
+	mlx_loop_hook(mlx, ft_draw_next_line, arr);
 	mlx_loop(mlx);
 	mlx_terminate(mlx);
 	return (MLX_SUCCESS);
-}*/
+}

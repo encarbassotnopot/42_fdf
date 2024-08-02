@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 09:03:44 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/02 15:30:47 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/02 16:30:16 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ int	main(int argc, char **argv)
 {
 	int			fd;
 	t_coord		*map;
-	t_coord		*new;
 	t_coord		*list_h;
+	t_coord		*new;
 	t_limits	*limits;
 
 	limits = ft_calloc(1, sizeof(t_limits));
@@ -119,7 +119,9 @@ int	main(int argc, char **argv)
 		printf("\n");
 		list_h = list_h->next_z;
 	}
-	free_coords(&map);
 	printf("min x: %2.4f, min y: %2.4f\nmax x: %2.4f, max y: %2.4f\n",
 		limits->min_x, limits->min_y, limits->max_x, limits->max_y);
+	mlx_main(map, limits);
+	free_coords(&map);
+	free(limits);
 }
