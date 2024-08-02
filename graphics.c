@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   graphics.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/01 14:21:49 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/02 09:08:51 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,16 +126,16 @@ static void	ft_mouse_hook(mouse_key_t button, action_t action,
 	{
 		mlx_get_mouse_pos(mlx, &points[0]->x, &points[0]->y);
 		ft_printf("x: %d, y: %d\n", points[1]->x, points[1]->y);
-		draw_line(img, points, 0xFFFFFFFF);
+		draw_line(img, points, 0xFF);
 	}
 	if (button == MLX_MOUSE_BUTTON_RIGHT)
 	{
 		mlx_get_mouse_pos(mlx, &points[1]->x, &points[1]->y);
 		ft_printf("x: %d, y: %d\n", points[0]->x, points[0]->y);
-		draw_line(img, points, 0xFFFFFFFF);
+		draw_line(img, points, 0xFF);
 	}
 }
-
+/*
 int32_t	main(void)
 {
 	mlx_t		*mlx;
@@ -159,11 +159,10 @@ int32_t	main(void)
 	arr[1] = img;
 	arr[2] = &color;
 	arr[4] = points;
-	/*mlx_loop_hook(mlx, ft_hook, arr);*/
 	mlx_resize_hook(mlx, ft_resize_hook, arr);
 	mlx_mouse_hook(mlx, ft_mouse_hook, arr);
 	mlx_key_hook(mlx, ft_key_hook, arr);
 	mlx_loop(mlx);
 	mlx_terminate(mlx);
 	return (MLX_SUCCESS);
-}
+}*/
