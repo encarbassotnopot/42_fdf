@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 14:21:42 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/02 15:23:10 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/03 14:36:47 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,6 @@ t_coord	*new_coord(double x, double y, double z)
 	coord->x = x;
 	coord->y = y;
 	coord->z = z;
-	/*coord->proj_x = 0;*/
-	/*coord->proj_y = 0;*/
-	/*coord->next_x = 0;*/
-	/*coord->next_z = 0;*/
 	return (coord);
 }
 

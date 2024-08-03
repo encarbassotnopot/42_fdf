@@ -6,15 +6,17 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 09:03:44 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/02 16:46:40 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/03 14:52:39 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+#include <float.h>
 
 void	calculate_2d(t_coord *c, t_limits *l)
 {
-	int s[3] = {3, 3, 3};
+	int	s[3] = {3, 3, 3};
+
 	c->proj_x = (c->x * s[0] - c->z * s[2]) * cos(M_PI / 6);
 	c->proj_y = c->y * s[1] + (c->x * s[0] + c->z * s[2]) * sin(M_PI / 6);
 	if (c->proj_x < l->min_x)
@@ -85,6 +87,10 @@ int	main(int argc, char **argv)
 	t_limits	*limits;
 
 	limits = ft_calloc(1, sizeof(t_limits));
+	limits->min_x = DBL_MAX;
+	limits->min_y = DBL_MAX;
+	limits->max_x = DBL_MIN;
+	limits->max_y = DBL_MIN;
 	map = NULL;
 	if (argc != 2)
 	{
@@ -114,11 +120,12 @@ int	main(int argc, char **argv)
 		new = list_h;
 		while (new)
 		{
-			printf("x': %2.4f, y': %2.4f\n", new->proj_x, new->proj_y);
-			new = new->next_x;
+			new->proj_x -= limits->min_x;
+			new->proj_y -= limits->min_y;
+			new = new->next_z;
 		}
 		printf("\n");
-		list_h = list_h->next_z;
+		list_h = list_h->next_x;
 	}
 	printf("min x: %2.4f, min y: %2.4f\nmax x: %2.4f, max y: %2.4f\n",
 		limits->min_x, limits->min_y, limits->max_x, limits->max_y);
