@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/03 16:35:24 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/03 16:45:19 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to, t_limits *l)
 	p_draw->x = to->proj_x + 10;
 	p_draw->y = to->proj_y + 10;
 	p_round = ft_calloc(1, sizeof(t_point));
-	if (p_diff->x == 0 && p_draw->y == 0)
+	if (p_diff->x == 0 && p_diff->y == 0)
 	{
 		ft_img_set_pixel(img, p_round, 0xFF);
 		free(p_diff);
@@ -70,9 +70,9 @@ static void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to, t_limits *l)
 	printf("from: %f,%f to %f,%f\n", from->proj_x, from->proj_y, to->proj_x,
 		to->proj_y);
 	if (fabs(p_diff->x) > fabs(p_diff->y))
-		step = p_diff->x;
+		step = fabs(p_diff->x);
 	else
-		step = p_diff->y;
+		step = fabs(p_diff->y);
 	p_diff->x /= step;
 	p_diff->y /= step;
 	while (++i <= step)
