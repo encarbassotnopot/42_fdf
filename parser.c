@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 09:03:44 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/03 14:52:39 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/03 16:36:16 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 void	calculate_2d(t_coord *c, t_limits *l)
 {
-	int	s[3] = {3, 3, 3};
+	int	s[3] = {30, -30, 30};
 
 	c->proj_x = (c->x * s[0] - c->z * s[2]) * cos(M_PI / 6);
 	c->proj_y = c->y * s[1] + (c->x * s[0] + c->z * s[2]) * sin(M_PI / 6);
@@ -43,7 +43,7 @@ int	parse_line(t_coord **map, char *line, int z, t_limits *l)
 	while (split[++x])
 	{
 		y = ft_atoi(split[x]);
-		new = new_coord(x * 10, y, z * 10);
+		new = new_coord(x, y, z);
 		if (!new)
 		{
 			ft_free_arr(split);

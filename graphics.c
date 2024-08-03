@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/03 15:05:22 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/03 16:35:24 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	ft_resize_hook(int32_t width, int32_t height, void **arr)
 
 	mlx = arr[0];
 	img = arr[1];
-	mlx_resize_image(img, width, height);
+	mlx_resize_image(img, width * IMG_SCALE, height * IMG_SCALE);
 }
 
 static void	ft_img_set_pixel(mlx_image_t *img, t_point *p, uint32_t color)
@@ -49,7 +49,7 @@ static void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to, t_limits *l)
 	t_point_d	*p_diff;
 	t_point_d	*p_draw;
 	t_point		*p_round;
-	int		step;
+	int			step;
 	int			i;
 
 	i = -1;
@@ -73,7 +73,6 @@ static void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to, t_limits *l)
 		step = p_diff->x;
 	else
 		step = p_diff->y;
-
 	p_diff->x /= step;
 	p_diff->y /= step;
 	while (++i <= step)
