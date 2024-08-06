@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/06 11:40:46 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 12:02:10 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,27 +22,17 @@ void	ft_img_set_pixel(mlx_image_t *img, t_point_d *p, uint32_t color)
 
 	if (p->x <= 0 || p->y <= 0)
 		return ;
-	x = round(p->x * IMG_SCALE);
-	y = round(p->y * IMG_SCALE);
+	x = round(p->x) * IMG_SCALE;
+	y = round(p->y) * IMG_SCALE;
 	ft_memset32(&img->pixels[x + y * img->width], color, 1);
 }
 
-void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to)
+void	update_line(t_point_d *p_diff, t_point_d *p_draw)
 {
-	t_point_d	*p_diff;
-	t_point_d	*p_draw;
-	int			step;
-	int			i;
+	int	step;
+	int	i;
 
 	i = -1;
-	p_diff = ft_calloc(1, sizeof(t_point_d));
-	p_draw = ft_calloc(1, sizeof(t_point_d));
-	if (!p_diff || !p_draw)
-	{
-		free(p_diff);
-		free(p_draw);
-		return ;
-	}
 	p_diff->x = from->proj_x - to->proj_x;
 	p_diff->y = from->proj_y - to->proj_y;
 	p_draw->x = to->proj_x + 10;
@@ -61,6 +51,22 @@ void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to)
 		p_draw->x += p_diff->x / step;
 		p_draw->y += p_diff->y / step;
 	}
+}
+
+void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to)
+{
+	t_point_d	*p_diff;
+	t_point_d	*p_draw;
+
+	p_diff = ft_calloc(1, sizeof(t_point_d));
+	p_draw = ft_calloc(1, sizeof(t_point_d));
+	if (!p_diff || !p_draw)
+	{
+		free(p_diff);
+		free(p_draw);
+		return ;
+	}
+	update_line(p_diff, p_draw);
 	free(p_diff);
 	free(p_draw);
 }
