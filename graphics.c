@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:57:57 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/06 12:02:10 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 12:37:03 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,12 @@ void	ft_img_set_pixel(mlx_image_t *img, t_point_d *p, uint32_t color)
 	ft_memset32(&img->pixels[x + y * img->width], color, 1);
 }
 
-void	update_line(t_point_d *p_diff, t_point_d *p_draw)
+void	update_line(mlx_image_t *img, t_point_d *p_diff, t_point_d *p_draw)
 {
 	int	step;
 	int	i;
 
 	i = -1;
-	p_diff->x = from->proj_x - to->proj_x;
-	p_diff->y = from->proj_y - to->proj_y;
-	p_draw->x = to->proj_x + 10;
-	p_draw->y = to->proj_y + 10;
 	if (p_diff->x == 0 && p_diff->y == 0)
 	{
 		ft_img_set_pixel(img, p_draw, 0xFF);
@@ -66,7 +62,11 @@ void	draw_line(mlx_image_t *img, t_coord *from, t_coord *to)
 		free(p_draw);
 		return ;
 	}
-	update_line(p_diff, p_draw);
+	p_diff->x = from->proj_x - to->proj_x;
+	p_diff->y = from->proj_y - to->proj_y;
+	p_draw->x = to->proj_x + 10;
+	p_draw->y = to->proj_y + 10;
+	update_line(img, p_diff, p_draw);
 	free(p_diff);
 	free(p_draw);
 }
@@ -91,12 +91,6 @@ void	draw_map(mlx_image_t *img, t_coord *map, int color)
 		}
 		line_h = line_h->next_z;
 	}
-}
-
-void	ft_key_hook(mlx_key_data_t kd, void *mlx)
-{
-	if (kd.key == MLX_KEY_ESCAPE)
-		mlx_close_window(mlx);
 }
 
 int32_t	mlx_main(t_coord *map, t_limits *l)

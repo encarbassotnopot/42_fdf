@@ -6,19 +6,17 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 09:03:44 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/06 11:45:00 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 12:40:05 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+#include <float.h>
 
 void	calculate_2d(t_coord *c, t_limits *l)
 {
-	int	s[3];
+	int	s[3] = {10, -10, 10};
 
-	s[0] = 30;
-	s[1] = -30;
-	s[2] = 30;
 	c->proj_x = (c->x * s[0] - c->z * s[2]) * cos(M_PI / 6);
 	c->proj_y = c->y * s[1] + (c->x * s[0] + c->z * s[2]) * sin(M_PI / 6);
 	if (c->proj_x < l->min_x)
@@ -48,13 +46,13 @@ int	parse_line(t_coord **map, char *line, int z, t_limits *l)
 		new = new_coord(x, y, z);
 		if (!new)
 		{
-			ft_free_arr(split);
+			ft_free_arr((void**)split);
 			return (1);
 		}
 		append_coord(map, new);
 		calculate_2d(new, l);
 	}
-	ft_free_arr(split);
+	ft_free_arr((void**)split);
 	return (0);
 }
 
@@ -80,6 +78,20 @@ int	parse_map(t_coord **map, int fd, t_limits *l)
 	return (0);
 }
 
+t_limits	*init_limits(void)
+{
+	t_limits	*limits;
+
+	limits = ft_calloc(1, sizeof(t_limits));
+	if (!limits)
+		return (NULL);
+	limits->min_x = DBL_MAX;
+	limits->min_y = DBL_MAX;
+	limits->max_x = DBL_MIN;
+	limits->max_y = DBL_MIN;
+	return (limits);
+}
+
 void	normalize_proj(t_coord *map, t_limits *limits)
 {
 	t_coord	*list_h;
@@ -97,18 +109,4 @@ void	normalize_proj(t_coord *map, t_limits *limits)
 		}
 		list_h = list_h->next_x;
 	}
-}
-
-t_limits	*init_limits(void)
-{
-	t_limits	*limits;
-
-	limits = ft_calloc(1, sizeof(t_limits));
-	if (!limits)
-		return (NULL);
-	limits->min_x = DBL_MAX;
-	limits->min_y = DBL_MAX;
-	limits->max_x = DBL_MIN;
-	limits->max_y = DBL_MIN;
-	return (limits);
 }

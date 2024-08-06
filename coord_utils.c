@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 14:21:42 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/03 14:36:47 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 12:20:24 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,6 @@ void	link_vert(t_coord **head, t_coord *last)
 
 void	append_coord(t_coord **head, t_coord *last)
 {
-	t_coord	*iter;
-
 	if (!*head)
 	{
 		*head = last;
