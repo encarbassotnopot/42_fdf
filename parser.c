@@ -6,17 +6,19 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 09:03:44 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/03 16:45:33 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 11:45:00 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-#include <float.h>
 
 void	calculate_2d(t_coord *c, t_limits *l)
 {
-	int	s[3] = {30, -30, 30};
+	int	s[3];
 
+	s[0] = 30;
+	s[1] = -30;
+	s[2] = 30;
 	c->proj_x = (c->x * s[0] - c->z * s[2]) * cos(M_PI / 6);
 	c->proj_y = c->y * s[1] + (c->x * s[0] + c->z * s[2]) * sin(M_PI / 6);
 	if (c->proj_x < l->min_x)
@@ -78,42 +80,11 @@ int	parse_map(t_coord **map, int fd, t_limits *l)
 	return (0);
 }
 
-int	main(int argc, char **argv)
+void	normalize_proj(t_coord *map, t_limits *limits)
 {
-	int			fd;
-	t_coord		*map;
-	t_coord		*list_h;
-	t_coord		*new;
-	t_limits	*limits;
+	t_coord	*list_h;
+	t_coord	*new;
 
-	limits = ft_calloc(1, sizeof(t_limits));
-	limits->min_x = DBL_MAX;
-	limits->min_y = DBL_MAX;
-	limits->max_x = DBL_MIN;
-	limits->max_y = DBL_MIN;
-	map = NULL;
-	if (argc != 2)
-	{
-		ft_printerr("Error: Wrong number of args\n");
-		exit(EXIT_FAILURE);
-	}
-	fd = open(argv[1], O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Error reading file");
-		exit(EXIT_FAILURE);
-	}
-	if (parse_map(&map, fd, limits))
-	{
-		ft_printerr("Error parsing map\n");
-		exit(EXIT_FAILURE);
-	}
-	close(fd);
-	if (!map)
-	{
-		ft_printerr("Error parsing map\n");
-		exit(EXIT_FAILURE);
-	}
 	list_h = map;
 	while (list_h)
 	{
@@ -124,12 +95,20 @@ int	main(int argc, char **argv)
 			new->proj_y -= limits->min_y;
 			new = new->next_z;
 		}
-		printf("\n");
 		list_h = list_h->next_x;
 	}
-	printf("min x: %2.4f, min y: %2.4f\nmax x: %2.4f, max y: %2.4f\n",
-		limits->min_x, limits->min_y, limits->max_x, limits->max_y);
-	mlx_main(map, limits);
-	free_coords(&map);
-	free(limits);
+}
+
+t_limits	*init_limits(void)
+{
+	t_limits	*limits;
+
+	limits = ft_calloc(1, sizeof(t_limits));
+	if (!limits)
+		return (NULL);
+	limits->min_x = DBL_MAX;
+	limits->min_y = DBL_MAX;
+	limits->max_x = DBL_MIN;
+	limits->max_y = DBL_MIN;
+	return (limits);
 }
