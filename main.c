@@ -6,15 +6,15 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 11:30:47 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/06 11:53:50 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 12:34:34 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-void get_map(int argc, char **argv, t_limits *limits, t_coord **map)
+void	get_map(int argc, char **argv, t_limits *limits, t_coord **map)
 {
-	int		fd;
+	int	fd;
 
 	if (argc != 2)
 	{
@@ -44,13 +44,14 @@ int	main(int argc, char **argv)
 	t_coord		*map;
 	t_limits	*limits;
 
+	map = NULL;
 	limits = init_limits();
 	if (!limits)
 	{
 		ft_printerr("Error: couldn't allocate memory for limits\n");
 		exit(EXIT_FAILURE);
 	}
-	get_map(argc, argv, limits, map);
+	get_map(argc, argv, limits, &map);
 	if (!map)
 	{
 		ft_printerr("Error parsing map\n");

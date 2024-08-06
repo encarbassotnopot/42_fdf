@@ -6,7 +6,7 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 12:51:05 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/06 11:43:33 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 12:36:50 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -62,4 +62,5 @@ int					parse_line(t_coord **map, char *line, int z, t_limits *l);
 int					parse_map(t_coord **map, int fd, t_limits *l);
 void				normalize_proj(t_coord *map, t_limits *limits);
 t_limits			*init_limits(void);
+void				ft_key_hook(mlx_key_data_t kd, void *mlx);
 #endif
