@@ -6,17 +6,19 @@
 /*   By: ecoma-ba <ecoma-ba@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 09:03:44 by ecoma-ba          #+#    #+#             */
-/*   Updated: 2024/08/06 12:40:05 by ecoma-ba         ###   ########.fr       */
+/*   Updated: 2024/08/06 12:47:07 by ecoma-ba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-#include <float.h>
 
 void	calculate_2d(t_coord *c, t_limits *l)
 {
-	int	s[3] = {10, -10, 10};
+	int	s[3];
 
+	s[0] = 10;
+	s[1] = -10;
+	s[2] = 10;
 	c->proj_x = (c->x * s[0] - c->z * s[2]) * cos(M_PI / 6);
 	c->proj_y = c->y * s[1] + (c->x * s[0] + c->z * s[2]) * sin(M_PI / 6);
 	if (c->proj_x < l->min_x)
@@ -46,13 +48,13 @@ int	parse_line(t_coord **map, char *line, int z, t_limits *l)
 		new = new_coord(x, y, z);
 		if (!new)
 		{
-			ft_free_arr((void**)split);
+			ft_free_arr((void **)split);
 			return (1);
 		}
 		append_coord(map, new);
 		calculate_2d(new, l);
 	}
-	ft_free_arr((void**)split);
+	ft_free_arr((void **)split);
 	return (0);
 }
 
