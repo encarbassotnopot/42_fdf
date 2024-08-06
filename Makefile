@@ -9,7 +9,7 @@ BUILD_DIR = build
 LIB_DIR = lib
 
 NAME = fdf
-CFLAGS = -Ofast -g -Fsanitize=address -Wno-everything
+CFLAGS = -Wall -Wextra -Ofast -g 
 
 CC = clang
 LIBMLX = MLX42
